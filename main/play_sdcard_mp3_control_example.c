@@ -33,6 +33,8 @@
 #include "sdcard_list.h"
 #include "sdcard_scan.h"
 
+#include "ui.h"
+
 static const char *TAG = "SDCARD_MP3_CONTROL_EXAMPLE";
 
 audio_pipeline_handle_t pipeline;
@@ -81,6 +83,7 @@ static esp_err_t input_key_service_cb(periph_service_handle_t handle, periph_ser
                 audio_pipeline_terminate(pipeline);
                 sdcard_list_next(sdcard_list_handle, 1, &url);
                 ESP_LOGW(TAG, "URL: %s", url);
+                ui_set_file_label(url);
                 audio_element_set_uri(fatfs_stream_reader, url);
                 audio_pipeline_reset_ringbuffer(pipeline);
                 audio_pipeline_reset_elements(pipeline);
@@ -179,6 +182,7 @@ void audio_pipeline_task(void *param)
     fatfs_cfg.type = AUDIO_STREAM_READER;
     fatfs_stream_reader = fatfs_stream_init(&fatfs_cfg);
     audio_element_set_uri(fatfs_stream_reader, url);
+    ui_set_file_label(url);
 
     ESP_LOGI(TAG, "[4.5] Register all elements to audio pipeline");
     audio_pipeline_register(pipeline, fatfs_stream_reader, "file");
@@ -230,6 +234,7 @@ void audio_pipeline_task(void *param)
                 if (el_state == AEL_STATE_FINISHED) {
                     ESP_LOGI(TAG, "[ * ] Finished, advancing to the next song");
                     sdcard_list_next(sdcard_list_handle, 1, &url);
+                    ui_set_file_label(url);
                     ESP_LOGW(TAG, "URL: %s", url);
                     /* In previous versions, audio_pipeline_terminal() was called here. It will close all the element task and when we use
                      * the pipeline next time, all the tasks should be restarted again. It wastes too much time when we switch to another music.

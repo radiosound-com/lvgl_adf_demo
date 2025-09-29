@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS main.c play_sdcard_mp3_control_example.c
+    SRCS main.c play_sdcard_mp3_control_example.c ui.c
     INCLUDE_DIRS .)
 
 idf_component_get_property(LVGL_LIB lvgl__lvgl COMPONENT_LIB)
